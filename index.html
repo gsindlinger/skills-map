@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Retreat Skills Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:var(--f-body);font-size:14px}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+/* Layout: a two-sided mindmap on a whiteboard surface (root in the middle, 5 topic clusters → 12 groups → sub-topics with post-it chips), solutions in a side rail. */
+:root{
+  --bg:#EDF0F4; --surface:#FFFFFF; --surface-2:#F6F8FA; --ink:#1B2330; --muted:#5A6576; --line:#C8D0DB; --line-soft:#DDE3EA;
+  --need:#FBE58C; --need-edge:#E2C64C; --need-ink:#3B3104;
+  --skill:#CFE3F8; --skill-edge:#9DC2EA; --skill-ink:#0F3150;
+  --sol:#D3EEDB; --sol-edge:#93CDA5; --sol-ink:#123A20;
+  --gap:#C2412D; --gap-soft:#FBE3DE; --ok:#2E7D4F; --ok-soft:#DDF1E4; --offer-soft:#E6ECF5;
+  --c1:#4E58CF; --c2:#0E8486; --c3:#C95A17; --c4:#AE3573; --c5:#667419; --c6:#2D6FB0; --c7:#8A5A12; --c8:#5B3FA8;
+  --hit:#1B2330;
+  --f-display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#11151B; --surface:#1A2029; --surface-2:#151A22; --ink:#E5E9EF; --muted:#9AA5B5; --line:#344050; --line-soft:#262E39;
+  --need:#3B3415; --need-edge:#6E5F1F; --need-ink:#F7E69A;
+  --skill:#17304A; --skill-edge:#2F5880; --skill-ink:#D2E5FA;
+  --sol:#173524; --sol-edge:#2E6A44; --sol-ink:#D1EEDA;
+  --gap:#F07C67; --gap-soft:#3D1F1A; --ok:#6FCB95; --ok-soft:#173324; --offer-soft:#222C3A;
+  --c1:#8E97F2; --c2:#3FC4C6; --c3:#F08D4E; --c4:#E574AC; --c5:#B0C24E; --c6:#7DB3EC; --c7:#D9A55A; --c8:#B39DF0; --hit:#FFFFFF; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#11151B; --surface:#1A2029; --surface-2:#151A22; --ink:#E5E9EF; --muted:#9AA5B5; --line:#344050; --line-soft:#262E39;
+  --need:#3B3415; --need-edge:#6E5F1F; --need-ink:#F7E69A;
+  --skill:#17304A; --skill-edge:#2F5880; --skill-ink:#D2E5FA;
+  --sol:#173524; --sol-edge:#2E6A44; --sol-ink:#D1EEDA;
+  --gap:#F07C67; --gap-soft:#3D1F1A; --ok:#6FCB95; --ok-soft:#173324; --offer-soft:#222C3A;
+  --c1:#8E97F2; --c2:#3FC4C6; --c3:#F08D4E; --c4:#E574AC; --c5:#B0C24E; --c6:#7DB3EC; --c7:#D9A55A; --c8:#B39DF0; --hit:#FFFFFF; color-scheme:dark }
+
+html,body{height:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.4}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.app{display:flex;flex-direction:column;height:100%}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--c1);outline-offset:2px}
+
+/* header */
+header{flex:none;background:var(--surface);border-bottom:1px solid var(--line-soft);padding-block:14px 12px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 28px}
+.brand{min-width:0}
+.brand h1{font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.controls{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin-left:auto}
+.search{position:relative}
+.search input{font:inherit;width:230px;max-width:62vw;padding:7px 10px 7px 30px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);color:var(--ink)}
+.search svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:2}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface-2)}
+.seg button{border:0;background:transparent;padding:6px 11px;cursor:pointer;font-size:13px;color:var(--muted)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.tool{border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13px}
+.tool:hover{border-color:var(--muted)}
+.zoom{display:inline-flex;gap:4px;align-items:center}
+.zoom .tool{width:32px;padding:6px 0;text-align:center}
+.zoom span{font-size:12px;color:var(--muted);width:38px;text-align:center;font-variant-numeric:tabular-nums}
+
+/* main */
+.layout{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 370px}
+.mapwrap{position:relative;min-width:0;min-height:0;display:flex;flex-direction:column}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:12px;color:var(--muted);
+  padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px;border-bottom:1px solid var(--line-soft)}
+.legend i{display:inline-block;width:14px;height:11px;border-radius:2px;vertical-align:-1px;margin-right:5px;border:1px solid}
+.legend .ln{background:var(--need);border-color:var(--need-edge)}
+.legend .ls{background:var(--skill);border-color:var(--skill-edge)}
+.legend .lo{background:var(--sol);border-color:var(--sol-edge)}
+.legend .hint{margin-left:auto}
+.viewport{flex:1;min-height:0;overflow:auto;cursor:grab;position:relative;overscroll-behavior:contain}
+.viewport.panning{cursor:grabbing;user-select:none}
+.sizer{position:relative}
+.canvas{position:absolute;left:0;top:0;transform-origin:0 0}
+.canvas svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+.edge{fill:none;stroke-width:2;opacity:.55}
+
+/* nodes */
+.node{position:absolute;box-sizing:border-box;cursor:default}
+.root{width:200px;text-align:center;background:var(--ink);color:var(--surface);border-radius:18px;padding:18px 14px}
+.root h2{font-family:var(--f-display);font-size:21px;margin:0 0 4px;line-height:1.1}
+.root p{margin:0;font-size:12px;opacity:.8;font-variant-numeric:tabular-nums}
+.cluster{width:170px;border-radius:14px;padding:12px 14px;color:#fff;background:var(--hue);cursor:pointer;border:0;text-align:left}
+:root[data-theme="dark"] .cluster{color:#11151B}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cluster{color:#11151B}}
+.cluster .eyebrow{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;opacity:.85;font-weight:600}
+.cluster h3{font-family:var(--f-display);font-size:19px;margin:2px 0 2px;line-height:1.1}
+.cluster p{margin:0;font-size:12px;opacity:.9}
+.group{width:220px;background:var(--surface);border:2px solid var(--hue);border-radius:12px;padding:10px 12px 10px;cursor:pointer;text-align:left}
+.group h4{font-family:var(--f-display);font-size:15.5px;margin:0 0 4px;line-height:1.2;text-wrap:balance}
+.group p{margin:0 0 8px;font-size:12px;color:var(--muted)}
+.gstats{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:11.5px;font-variant-numeric:tabular-nums}
+.cnt{border-radius:4px;padding:1px 6px;font-weight:600}
+.cnt.n{background:var(--need);color:var(--need-ink)}
+.cnt.s{background:var(--skill);color:var(--skill-ink)}
+.toggle{margin-left:auto;color:var(--muted);font-size:11px}
+.sub{width:320px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 11px 11px;box-shadow:0 1px 0 var(--line-soft)}
+.sub .head{display:flex;gap:8px;align-items:flex-start}
+.sub h5{font-family:var(--f-display);font-size:14.5px;margin:0;line-height:1.25;flex:1;min-width:0}
+.sub .desc{margin:2px 0 8px;font-size:12px;color:var(--muted)}
+.pill{flex:none;font-size:10.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;border-radius:999px;padding:2px 8px;white-space:nowrap}
+.pill.gap{background:var(--gap-soft);color:var(--gap)}
+.pill.matched{background:var(--ok-soft);color:var(--ok)}
+.pill.offer{background:var(--offer-soft);color:var(--muted)}
+.lane{margin-top:6px}
+.lane-label{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 4px}
+.chips{display:flex;flex-direction:column;gap:4px}
+.chip{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 7px;align-items:baseline;border-radius:3px 3px 3px 9px;padding:5px 8px 5px 7px;font-size:12.5px;line-height:1.3;border:1px solid;cursor:pointer;text-align:left;width:100%;box-sizing:border-box}
+.chip.need{background:var(--need);border-color:var(--need-edge);color:var(--need-ink)}
+.chip.skill{background:var(--skill);border-color:var(--skill-edge);color:var(--skill-ink)}
+.chip .id{font-family:var(--f-mono);font-size:10.5px;opacity:.7}
+.chip .by{grid-column:2;font-size:11px;opacity:.75}
+.chip .linked{grid-column:2;font-size:10.5px;font-weight:600;color:var(--sol-ink);background:var(--sol);border:1px solid var(--sol-edge);border-radius:3px;padding:0 5px;justify-self:start;margin-top:3px}
+.empty{font-size:12px;color:var(--gap);font-style:italic;padding:2px 0}
+.see{margin-top:7px;font-size:11.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:6px}
+.see b{font-weight:600;color:var(--ink)}
+.dim{opacity:.22;transition:opacity .15s}
+.hit{outline:2px solid var(--hit);outline-offset:1px}
+.flash{animation:flash 1.2s ease-out}
+@keyframes flash{0%{box-shadow:0 0 0 0 var(--hue,var(--c1))}30%{box-shadow:0 0 0 6px color-mix(in srgb,var(--hue,var(--c1)) 35%,transparent)}100%{box-shadow:0 0 0 0 transparent}}
+
+/* solutions rail */
+aside{border-left:1px solid var(--line-soft);background:var(--surface);overflow:auto;min-height:0;
+  padding-block:14px 24px;padding-left:16px;padding-right:max(16px,env(safe-area-inset-right,0px))}
+aside h2{font-family:var(--f-display);font-size:18px;margin:0}
+aside .lead{margin:3px 0 12px;color:var(--muted);font-size:12.5px}
+aside h3{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;font-weight:600}
+.sols{display:flex;flex-direction:column;gap:8px}
+.sol{background:var(--sol);border:1px solid var(--sol-edge);color:var(--sol-ink);border-radius:3px 3px 3px 12px;padding:9px 11px 10px;cursor:pointer;text-align:left;width:100%;box-sizing:border-box}
+.sol.gapsol{background:var(--surface-2);border:1px dashed var(--gap);color:var(--ink)}
+.sol.active{outline:2px solid var(--hit);outline-offset:1px}
+.sol.linked{box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 45%,transparent)}
+.sol .top{display:flex;gap:8px;align-items:baseline}
+.sol .sid{font-family:var(--f-mono);font-size:10.5px;opacity:.7}
+.sol h4{margin:0;font-size:14px;font-weight:600;flex:1}
+.sol p{margin:3px 0 6px;font-size:12.5px;opacity:.85}
+.sol .who{font-size:12px;margin-bottom:6px}
+.refs{display:flex;flex-wrap:wrap;gap:4px}
+.ref{font-size:11px;border-radius:4px;padding:1px 6px;background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.ref.g::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--hue);margin-right:5px;vertical-align:0}
+.ref.n{font-family:var(--f-mono);background:var(--need);color:var(--need-ink);border-color:var(--need-edge)}
+.clearbar{position:sticky;top:0;z-index:2;display:flex;gap:8px;align-items:center;background:var(--ink);color:var(--surface);border-radius:8px;padding:7px 10px;font-size:12.5px;margin-bottom:10px}
+.clearbar button{margin-left:auto;background:transparent;border:1px solid currentColor;border-radius:6px;padding:2px 8px;cursor:pointer;color:inherit}
+.foot{margin-top:18px;font-size:12px;color:var(--muted)}
+
+
+.chip.added{border-style:dashed}
+.chip .rm, .sol .rm{grid-column:2;justify-self:start;margin-top:4px;font-size:11px;background:transparent;border:1px solid currentColor;border-radius:4px;padding:0 6px;cursor:pointer;opacity:.75;color:inherit}
+.chip .rm:hover,.sol .rm:hover{opacity:1}
+.addbtn{margin-top:8px;width:100%;border:1px dashed var(--line);background:transparent;border-radius:6px;padding:6px;font-size:12px;color:var(--muted);cursor:pointer}
+.addbtn:hover{border-color:var(--hue);color:var(--ink)}
+.addform{margin-top:8px;display:flex;flex-direction:column;gap:5px;border-top:1px dashed var(--line);padding-top:8px}
+.kindseg{display:flex;gap:6px}
+.kindseg label{flex:1;cursor:pointer}
+.kindseg input{position:absolute;opacity:0;pointer-events:none}
+.kindseg span{display:block;text-align:center;font-size:12px;padding:4px 6px;border-radius:5px;border:1px solid var(--line);color:var(--muted)}
+.kindseg input:checked + .kn{background:var(--need);border-color:var(--need-edge);color:var(--need-ink);font-weight:600}
+.kindseg input:checked + .ks{background:var(--skill);border-color:var(--skill-edge);color:var(--skill-ink);font-weight:600}
+.kindseg input:focus-visible + span{outline:2px solid var(--c1);outline-offset:1px}
+.fl{font-size:11.5px;color:var(--muted);font-weight:600}
+.fl span{font-weight:400}
+.addform textarea,.addform input[type=text],.pform input,.pform textarea,.pform select{font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface-2);color:var(--ink);width:100%;box-sizing:border-box;resize:vertical}
+.formrow{display:flex;gap:6px;margin-top:2px}
+.primary{background:var(--ink);color:var(--surface);border:0;border-radius:6px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer}
+.primary:disabled{opacity:.6}
+.ghost{background:transparent;border:1px solid var(--line);border-radius:6px;padding:6px 12px;font-size:12.5px;cursor:pointer;color:var(--ink)}
+.shared{font-size:12px;border-radius:8px;padding:8px 10px;margin:0 0 10px;background:var(--surface-2);border:1px solid var(--line-soft);color:var(--muted)}
+.shared[data-state="on"]{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
+.proposebtn{width:100%;margin:2px 0 4px;padding:8px;border:1px dashed var(--sol-edge);background:var(--sol);color:var(--sol-ink);border-radius:8px;cursor:pointer;font-weight:600;font-size:13px}
+.pform{display:flex;flex-direction:column;gap:5px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px;margin:6px 0 4px}
+.pform .fl{margin-top:3px}
+.pnotes{display:flex;flex-direction:column;gap:3px;max-height:170px;overflow:auto;border:1px solid var(--line-soft);border-radius:6px;padding:5px;background:var(--surface)}
+.pnote{display:flex;gap:6px;align-items:flex-start;font-size:12px;cursor:pointer}
+.pnote input{margin-top:2px}
+.sol.groupsol{border-style:dashed}
+.sol .propby{font-size:11.5px;opacity:.75;margin:-2px 0 6px}
+.interest{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;padding-top:7px;border-top:1px solid color-mix(in srgb,currentColor 18%,transparent)}
+.join{font-size:12px;border-radius:999px;padding:3px 10px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+.join.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.people{font-size:11.5px;opacity:.8}
+.interest .rm{margin:0 0 0 auto}
+.muted{color:var(--muted);font-size:12px;margin:0}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:9px 14px;border-radius:8px;font-size:13px;z-index:20;max-width:calc(100% - 32px);box-shadow:0 4px 18px rgba(0,0,0,.2)}
+
+@media (max-width: 980px){
+  .app{height:auto}
+  .layout{grid-template-columns:1fr}
+  .viewport{height:72vh;flex:none}
+  aside{border-left:0;border-top:1px solid var(--line-soft);padding-left:max(16px,env(safe-area-inset-left,0px))}
+  .legend .hint{display:none}
+}
+@media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} }
+
+.dropwrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));background:var(--bg);z-index:3;overflow:auto}
+.drop{width:min(560px,100%);background:var(--surface);border:2px dashed var(--line);border-radius:16px;padding:28px 26px;text-align:left}
+.drop.over{border-color:var(--c1);background:color-mix(in srgb,var(--c1) 6%,var(--surface))}
+.drop h2{font-family:var(--f-display);font-size:22px;margin:0 0 6px;text-wrap:balance}
+.drop ol{margin:10px 0 16px;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:var(--ink)}
+.drop .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.drop .pick{background:var(--ink);color:var(--surface);border:0;border-radius:8px;padding:9px 16px;font-weight:600;cursor:pointer;font-size:14px}
+.drop .hint2{color:var(--muted);font-size:13px}
+.drop .priv{margin:14px 0 0;font-size:12.5px;color:var(--muted)}
+.drop .remember{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted);margin-top:10px}
+.err{margin-top:12px;background:var(--gap-soft);color:var(--gap);border-radius:8px;padding:8px 10px;font-size:13px}
+.warnings{font-size:12px;background:var(--surface-2);border:1px solid var(--line-soft);border-radius:8px;padding:8px 10px;margin:0 0 10px}
+.warnings summary{cursor:pointer;color:var(--muted)}
+.warnings ul{margin:6px 0 0;padding-left:18px}
+.filebar{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sol .int{font-size:12px;margin-top:6px}
+.sol.done{opacity:.7}
+.sol{cursor:pointer}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand">
+    <h1>Retreat 2026 · Skills &amp; Needs Map</h1>
+    <p id="stats">Load the shared Excel file to draw the map.</p>
+  </div>
+  <div class="controls">
+    <label class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <input id="q" type="search" placeholder="Search topic, person or N12…" aria-label="Search notes"></label>
+    <div class="seg" role="group" aria-label="Show">
+      <button data-f="all" aria-pressed="true">Everything</button>
+      <button data-f="needs" aria-pressed="false">Needs only</button>
+      <button data-f="gaps" aria-pressed="false">Unmet needs</button>
+    </div>
+    <button class="tool" id="expand">Expand all</button>
+    <button class="tool" id="collapse">Collapse to groups</button>
+    <div class="zoom"><button class="tool" id="zout" aria-label="Zoom out">−</button><span id="zv">100%</span><button class="tool" id="zin" aria-label="Zoom in">+</button></div>
+    <button class="tool" id="reload">Load another file</button>
+  </div>
+</header>
+<div class="layout">
+  <div class="mapwrap">
+    <div class="legend">
+      <span><i class="ln"></i>Need or challenge</span>
+      <span><i class="ls"></i>Skill someone offers</span>
+      <span><i class="lo"></i>Solution / follow-up</span>
+      <span class="pill gap">Gap</span><span class="pill matched">Helpers on board</span><span class="pill offer">Offer only</span>
+      <span class="hint">Drag to pan · click a topic or group to fold it</span>
+    </div>
+    <div class="viewport" id="vp"><div class="sizer" id="sizer"><div class="canvas" id="cv"><svg id="edges"></svg></div></div></div>
+    <div class="dropwrap" id="dropwrap">
+      <div class="drop" id="drop">
+        <h2>Open the skills map</h2>
+        <ol>
+          <li>Open the shared <b>Retreat skills map</b> Excel file in OneDrive or Teams.</li>
+          <li>Choose <b>File → Create a copy → Download a copy</b>.</li>
+          <li>Drop the downloaded file here, or pick it.</li>
+        </ol>
+        <div class="row"><button class="pick" id="pick">Choose Excel file</button><span class="hint2">or drag it onto this box</span></div>
+        <input type="file" id="file" accept=".xlsx,.xlsm,.xls" hidden>
+        <label class="remember"><input type="checkbox" id="remember"> Remember the map on this device until I load another file</label>
+        <p class="priv">The file is read inside your browser. Nothing is uploaded or stored on a server.</p>
+        <div class="err" id="err" hidden></div>
+      </div>
+    </div>
+  </div>
+  <aside id="rail">
+    <h2>Solutions &amp; follow-ups</h2>
+    <p class="lead">Click a card to light up the notes it answers. Click a note in the map to see which follow-ups cover it. To add one, add a row on the “Follow-ups” sheet.</p>
+    <div class="filebar" id="filebar"></div>
+    <details class="warnings" id="warnings" hidden><summary id="warnsum"></summary><ul id="warnlist"></ul></details>
+    <div id="clear" hidden class="clearbar"><span id="cleartxt"></span><button id="clearbtn">Clear</button></div>
+    <div id="solsections"></div>
+  </aside>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm = s => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ");
+const keyOf = s => String(s ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+const PREFIX = /^(skills? & exp|skills?|experience|challenges?|wishes\/needs|wishes|gain knowledge|struggle|need help|collaborators|ideal collaborator)\s*:\s*/i;
+
+// ================= Excel → map data
+function parseWorkbook(wb){
+  const warn = [];
+  const sheet = name => {
+    const real = wb.SheetNames.find(n => keyOf(n) === keyOf(name));
+    if (!real) return null;
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[real], {defval:"", raw:false});
+    return rows.map((r, i) => { const o = {_row: i + 2}; for (const k in r) o[keyOf(k)] = String(r[k] ?? "").trim(); return o; });
+  };
+  const st = sheet("Structure"), nt = sheet("Notes"), fu = sheet("Follow-ups") || sheet("Followups") || [];
+  if (!nt) throw new Error("This file has no “Notes” sheet. Use the shared retreat skills map workbook.");
+  if (!st) throw new Error("This file has no “Structure” sheet. Use the shared retreat skills map workbook.");
+
+  const topics = [], groups = {}, map = [];
+  const topicByName = {};
+  st.forEach(r => {
+    const tn = r.topic || "Other topics", gn = r.group, sn = r.subtopic;
+    if (!gn) return;
+    let t = topicByName[norm(tn)];
+    if (!t){ t = topicByName[norm(tn)] = {id:"t"+topics.length, title:tn, sub:r.topicsubtitle || "", groups:[]}; topics.push(t); }
+    let g = groups[norm(gn)];
+    if (!g){ g = groups[norm(gn)] = {id:"g"+Object.keys(groups).length, title:gn, desc:r.groupdescription || "", subs:[], topic:t}; t.groups.push(g); }
+    else if (!g.desc && r.groupdescription) g.desc = r.groupdescription;
+    if (sn && !g.subs.some(s => norm(s.title)===norm(sn)))
+      g.subs.push({sid:g.id+"-"+g.subs.length, title:sn, desc:r.subtopicdescription || "", see:r.seealso || "", need:[], skill:[]});
+  });
+  const otherSub = g => {
+    let s = g.subs.find(s => s._other);
+    if (!s){ s = {sid:g.id+"-other", title:"Other", desc:"Added without a sub-topic, or with one not on the Structure sheet.", see:"", need:[], skill:[], _other:true}; g.subs.push(s); }
+    return s;
+  };
+  const unsortedGroup = () => {
+    let g = groups["__unsorted"];
+    if (!g){
+      let t = topicByName["__unsorted"];
+      if (!t){ t = topicByName["__unsorted"] = {id:"tx", title:"Unsorted", sub:"Notes without a known group", groups:[]}; topics.push(t); }
+      g = groups["__unsorted"] = {id:"gx", title:"Unsorted notes", desc:"These rows have an empty or unknown Group. Pick a group in the Excel file.", subs:[], topic:t}; t.groups.push(g);
+    }
+    return g;
+  };
+
+  const notes = {};
+  nt.forEach(r => {
+    const text = r.text; if (!text) return;
+    const type = norm(r.type);
+    const k = type.startsWith("n") ? "need" : type.startsWith("s") ? "skill" : null;
+    if (!k){ warn.push(`Notes row ${r._row}: Type should be “Need” or “Skill” (skipped).`); return; }
+    let id = r.id || ("R" + r._row);
+    if (notes[id]){ warn.push(`Notes row ${r._row}: ID ${id} is used twice; shown as ${id}·${r._row}.`); id = id + "·" + r._row; }
+    let g = groups[norm(r.group)];
+    if (!g){ warn.push(`Notes row ${r._row} (${id}): ${r.group ? "unknown group “"+r.group+"”" : "no group"}; put under Unsorted.`); g = unsortedGroup(); }
+    let s = r.subtopic ? g.subs.find(s => norm(s.title)===norm(r.subtopic)) : null;
+    if (!s){ if (r.subtopic) warn.push(`Notes row ${r._row} (${id}): sub-topic “${r.subtopic}” is not in group “${g.title}”; shown under Other.`); s = otherSub(g); }
+    s[k].push(id);
+    const short = text.replace(PREFIX, "");
+    notes[id] = {k, t: short ? short[0].toUpperCase() + short.slice(1) : text, full:text, a:r.person || "unsigned", sid:s.sid};
+  });
+
+  // layout: balance topics left/right by number of sub-topics, colour by order
+  let L = 0, R = 0;
+  topics.forEach((t, i) => {
+    t.groups.forEach(g => { g.subs = g.subs.filter(s => s.need.length || s.skill.length || !s._other); });
+    t.groups = t.groups.filter(g => g.subs.length);
+    const n = t.groups.reduce((a, g) => a + g.subs.length, 0);
+    t.hue = "c" + (i % 8 + 1);
+    if (R <= L){ t.side = "right"; R += n; } else { t.side = "left"; L += n; }
+    if (t.groups.length) map.push(t);
+  });
+
+  const statusOf = s => { const n = norm(s); return (n.startsWith("agree") || n.startsWith("discuss") || n.includes("workshop")) ? "agreed" : n.includes("outside") ? "gap" : (n.startsWith("done") || n.startsWith("drop")) ? "done" : "idea"; };
+  const sol = [];
+  fu.forEach((r, i) => {
+    if (!r.title) return;
+    const gs = (groups[norm(r.group)] ? [r.group] : r.group.split(/[;|]/)).map(x => groups[norm(x)]).filter(Boolean).map(g => g.id);
+    if (r.group && !gs.length) warn.push(`Follow-ups row ${r._row}: unknown group “${r.group}”.`);
+    const refs = (r.addressesnotes || "").split(/[\s,;]+/).filter(Boolean);
+    const known = refs.filter(x => notes[x]);
+    refs.filter(x => !notes[x]).forEach(x => warn.push(`Follow-ups row ${r._row}: note ${x} not found.`));
+    sol.push({id: r.id || ("F" + (i + 1)), kind: statusOf(r.status), status: r.status, title: r.title, detail: r.whatwouldhappen || "", lead: r.leadhelpers || "", groups: gs, notes: known, interested: r.interested || ""});
+  });
+  return {notes, map, sol, warn};
+}
+
+// ================= rendering
+const cv = $("#cv"), svg = $("#edges"), vp = $("#vp"), sizer = $("#sizer");
+const W = {root:200, cluster:170, group:220, sub:320}, GAP = 54, VG = {sub:12, group:22, cluster:40};
+const statusLabel = {gap:"Gap", matched:"Helpers on board", offer:"Offer only"};
+let D = null, nodes = [], clusters = [], subs = [], root = null, groupById = {}, subById = {};
+const state = { collapsed:new Set(), filter:"all", q:"", hl:null, activeSol:null, scale:1 };
+
+const solsFor = key => D.sol.filter(s => s.notes.includes(key));
+const subOfKey = key => D.notes[key] && subById[D.notes[key].sid];
+
+function chipEl(key){
+  const n = D.notes[key], sols = solsFor(key);
+  const c = el("button", "chip " + n.k);
+  c.dataset.id = key; c.title = n.full + " — " + n.a;
+  c.innerHTML = `<span class="id"></span><span class="tx"></span><span class="by"></span>` + (sols.length ? `<span class="linked">→ ${sols.map(s=>esc(s.id)).join(", ")}</span>` : "");
+  c.querySelector(".id").textContent = key; c.querySelector(".tx").textContent = n.t; c.querySelector(".by").textContent = n.a;
+  c.addEventListener("click", e => { e.stopPropagation(); showSolutionsFor(key); });
+  return c;
+}
+function build(){
+  [...cv.querySelectorAll(".node")].forEach(n => n.remove());
+  nodes = []; groupById = {}; subById = {};
+  state.collapsed.clear(); state.hl = null; state.activeSol = null; state.q = ""; $("#q").value = ""; setClear("");
+  root = {kind:"root", el: el("div","node root")}; cv.appendChild(root.el); nodes.push(root);
+  let allN = 0, allS = 0, gaps = 0;
+  D.map.forEach(t => {
+    const cn = {kind:"cluster", data:t, side:t.side, hue:`var(--${t.hue})`, key:"c:"+t.id, children:[]};
+    const tN = t.groups.reduce((a,g)=>a+g.subs.reduce((x,s)=>x+s.need.length,0),0);
+    cn.el = el("button","node cluster", `<div class="eyebrow">${t.groups.length} group${t.groups.length>1?"s":""} · ${tN} needs</div><h3></h3><p></p>`);
+    cn.el.querySelector("h3").textContent = t.title; cn.el.querySelector("p").textContent = t.sub;
+    cn.el.style.setProperty("--hue", cn.hue); cn.el.addEventListener("click", () => toggle(cn));
+    cv.appendChild(cn.el); nodes.push(cn);
+    t.groups.forEach(g => {
+      const n = g.subs.reduce((a,s)=>a+s.need.length,0), s = g.subs.reduce((a,x)=>a+x.skill.length,0);
+      allN += n; allS += s;
+      const gn = {kind:"group", data:g, parent:cn, side:t.side, hue:cn.hue, key:"g:"+g.id, children:[]};
+      groupById[g.id] = gn;
+      gn.el = el("button","node group", `<h4></h4><p></p><div class="gstats"><span class="cnt n">${n} need${n===1?"":"s"}</span><span class="cnt s">${s} skill${s===1?"":"s"}</span><span class="toggle"></span></div>`);
+      gn.el.querySelector("h4").textContent = g.title; gn.el.querySelector("p").textContent = g.desc;
+      gn.el.style.setProperty("--hue", gn.hue); gn.el.addEventListener("click", () => toggle(gn));
+      cv.appendChild(gn.el); nodes.push(gn); cn.children.push(gn);
+      g.subs.forEach(sd => {
+        const sn = {kind:"sub", data:sd, parent:gn, side:t.side, hue:cn.hue};
+        sn.status = !sd.need.length ? "offer" : (sd.skill.length ? "matched" : "gap");
+        if (sn.status==="gap") gaps++;
+        subById[sd.sid] = sn;
+        const e = el("div","node sub"); e.style.setProperty("--hue", sn.hue);
+        e.appendChild(el("div","head",`<h5></h5><span class="pill ${sn.status}">${statusLabel[sn.status]}</span>`));
+        e.querySelector("h5").textContent = sd.title;
+        if (sd.desc){ const p = el("p","desc"); p.textContent = sd.desc; e.appendChild(p); }
+        const ln = el("div","lane"); ln.appendChild(el("p","lane-label",`Needs · ${sd.need.length}`));
+        const lc = el("div","chips"); sd.need.forEach(id => lc.appendChild(chipEl(id))); ln.appendChild(lc); ln.hidden = !sd.need.length;
+        const ls = el("div","lane"); ls.appendChild(el("p","lane-label",`Who can help · ${sd.skill.length}`));
+        const sc = el("div","chips"); sd.skill.forEach(id => sc.appendChild(chipEl(id)));
+        if (!sd.skill.length) sc.appendChild(el("div","empty","No matching skill yet"));
+        ls.appendChild(sc); sn.skillLane = ls; e.append(ln, ls);
+        if (sd.see){ const d = el("div","see","<b>See also</b> "); d.appendChild(document.createTextNode(sd.see)); e.appendChild(d); }
+        sn.el = e; cv.appendChild(e); nodes.push(sn); gn.children.push(sn);
+      });
+    });
+  });
+  clusters = nodes.filter(n=>n.kind==="cluster"); subs = nodes.filter(n=>n.kind==="sub");
+  root.el.innerHTML = `<h2>Retreat 2026</h2><p>${allN+allS} notes<br>skills ↔ needs</p>`;
+  const nG = D.map.reduce((a,t)=>a+t.groups.length,0);
+  $("#stats").textContent = `${allS} skills · ${allN} needs · ${D.map.length} topics · ${nG} groups · ${gaps} sub-topics with no helper yet · ${D.sol.filter(s=>s.kind==="agreed").length} follow-ups from the workshop · ${D.sol.filter(s=>s.kind==="idea").length} new ideas`;
+  renderRail();
+  nodes.filter(n=>n.kind==="group").forEach(g=>state.collapsed.add(g.key));
+  layout();
+  const fit = Math.min(vp.clientWidth / state.W, vp.clientHeight / state.H);
+  state.scale = Math.max(0.6, Math.min(1, +fit.toFixed(2)));
+  if (vp.clientWidth < 600) state.scale = 0.7;
+  applyScale(); scrollToNode(root, false);
+}
+function solCard(s){
+  const b = el("div", "sol" + (s.kind==="gap" ? " gapsol" : "") + (s.kind==="done" ? " done" : ""));
+  b.dataset.sid = s.id; b.tabIndex = 0; b.setAttribute("role","button");
+  b.innerHTML = `<div class="top"><span class="sid"></span><h4></h4></div><p class="det"></p>${s.lead ? `<div class="who">Lead / helpers: <b></b></div>` : ""}<div class="refs"></div>${s.interested ? `<div class="int">Interested: <b></b></div>` : ""}`;
+  b.querySelector(".sid").textContent = s.id; b.querySelector("h4").textContent = s.title; b.querySelector(".det").textContent = s.detail;
+  if (s.lead) b.querySelector(".who b").textContent = s.lead;
+  if (s.interested) b.querySelector(".int b").textContent = s.interested;
+  const refs = b.querySelector(".refs");
+  s.groups.forEach(g => { const gn = groupById[g]; if (!gn) return; const r = el("span","ref g"); r.style.setProperty("--hue", gn.hue); r.textContent = gn.data.title; refs.appendChild(r); });
+  s.notes.forEach(n => { const r = el("span","ref n"); r.textContent = n; r.title = D.notes[n].full; refs.appendChild(r); });
+  b.addEventListener("click", () => activateSol(s));
+  b.addEventListener("keydown", e => { if (e.key==="Enter") activateSol(s); });
+  return b;
+}
+function renderRail(){
+  const box = $("#solsections"); box.innerHTML = "";
+  [["agreed","Discussed at the workshop"],["idea","New ideas"],["gap","Needs outside help"],["done","Done or dropped"]].forEach(([k, label]) => {
+    const list = D.sol.filter(s => s.kind===k); if (!list.length) return;
+    box.appendChild(el("h3", null, label));
+    const w = el("div","sols"); list.forEach(s => w.appendChild(solCard(s))); box.appendChild(w);
+  });
+  if (!D.sol.length) box.appendChild(el("p","muted","No follow-ups in the file yet."));
+  const ws = $("#warnings");
+  ws.hidden = !D.warn.length;
+  $("#warnsum").textContent = `${D.warn.length} row${D.warn.length===1?"":"s"} in the file need a look`;
+  $("#warnlist").innerHTML = ""; D.warn.forEach(w => { const li = document.createElement("li"); li.textContent = w; $("#warnlist").appendChild(li); });
+}
+
+function subVisible(sn){
+  if (state.filter==="needs") return sn.data.need.length>0;
+  if (state.filter==="gaps") return sn.status==="gap";
+  return true;
+}
+function noteMatches(id, q){ const n = D.notes[id]; return (id+" "+n.full+" "+n.a).toLowerCase().includes(q); }
+function applyMarks(){
+  const q = state.q, hl = state.hl;
+  subs.forEach(sn => {
+    sn.skillLane.hidden = state.filter!=="all";
+    let any = false;
+    sn.el.querySelectorAll(".chip").forEach(c => {
+      const id = c.dataset.id;
+      let on = true;
+      if (hl) on = hl.has(id);
+      else if (q) on = noteMatches(id,q) || (sn.data.title+" "+sn.data.desc+" "+sn.parent.data.title).toLowerCase().includes(q);
+      c.classList.toggle("dim", !!(hl||q) && !on);
+      c.classList.toggle("hit", !!hl && on);
+      if (on) any = true;
+    });
+    if (!hl && q && (sn.data.title+" "+sn.parent.data.title).toLowerCase().includes(q)) any = true;
+    sn.matchAny = any;
+    sn.el.classList.toggle("dim", !!(hl||q) && !any);
+  });
+  nodes.filter(n=>n.kind==="group").forEach(gn => gn.el.classList.toggle("dim", !!(hl||q) && !gn.children.some(s=>s.matchAny)));
+  clusters.forEach(cn => cn.el.classList.toggle("dim", !!(hl||q) && !cn.children.some(g=>g.children.some(s=>s.matchAny))));
+}
+function toggle(n){
+  const opening = state.collapsed.has(n.key);
+  if (opening) state.collapsed.delete(n.key); else state.collapsed.add(n.key);
+  layout();
+  if (opening && n.kind==="group"){ const f = n.children.find(s=>s.vis); if (f) scrollToNode(f); }
+  n.el.classList.remove("flash"); void n.el.offsetWidth; n.el.classList.add("flash");
+}
+function layout(){
+  if (!D) return;
+  applyMarks();
+  nodes.forEach(n => { if (n.kind!=="root") n.vis = false; });
+  clusters.forEach(cn => {
+    cn.groupsVis = cn.children.filter(g => g.children.some(subVisible));
+    cn.vis = cn.groupsVis.length>0;
+    cn.groupsVis.forEach(g => { g.vis = !state.collapsed.has(cn.key); g.subsVis = g.children.filter(subVisible);
+      g.subsVis.forEach(s => s.vis = g.vis && !state.collapsed.has(g.key)); });
+  });
+  nodes.forEach(n => { if (n.kind!=="root") n.el.hidden = !n.vis; });
+  nodes.filter(n=>n.kind==="group").forEach(g => {
+    g.el.querySelector(".toggle").textContent = state.collapsed.has(g.key) ? `show ${g.children.filter(subVisible).length} ▸` : "fold ▾";
+  });
+  nodes.forEach(n => { if (n.vis!==false) n.h = n.el.offsetHeight; });
+  const sides = {left:[], right:[]};
+  clusters.filter(c=>c.vis).forEach(c => sides[c.side].push(c));
+  const place = list => {
+    let y = 0;
+    list.forEach((cn, ci) => {
+      if (ci) y += VG.cluster;
+      const vg = cn.groupsVis.filter(g=>g.vis);
+      if (!vg.length){ cn.y = y; y += cn.h; return; }
+      const startC = y; const centers = [];
+      vg.forEach((g, gi) => {
+        if (gi) y += VG.group;
+        const vs = g.subsVis.filter(s=>s.vis);
+        const subsH = vs.reduce((a,s)=>a+s.h,0) + Math.max(0,vs.length-1)*VG.sub;
+        const block = Math.max(subsH, g.h);
+        let sy = y + (block - subsH)/2;
+        vs.forEach(s => { s.y = sy; sy += s.h + VG.sub; });
+        g.y = y + (block - g.h)/2; centers.push(g.y + g.h/2);
+        y += block;
+      });
+      const mid = (centers[0] + centers[centers.length-1]) / 2;
+      cn.y = Math.max(startC, mid - cn.h/2);
+      if (cn.y + cn.h > y) y = cn.y + cn.h;
+    });
+    return y;
+  };
+  const hL = place(sides.left), hR = place(sides.right);
+  const PAD = 30, H = Math.max(hL, hR, root.h) + PAD*2;
+  const half = W.root/2 + GAP + W.cluster + GAP + W.group + GAP + W.sub;
+  const Wd = half*2 + PAD*2, X0 = Wd/2;
+  const offs = {left: PAD + (H-PAD*2-hL)/2, right: PAD + (H-PAD*2-hR)/2};
+  const xs = {
+    right:{cluster: X0+W.root/2+GAP, group: X0+W.root/2+GAP*2+W.cluster, sub: X0+W.root/2+GAP*3+W.cluster+W.group},
+    left: {cluster: X0-W.root/2-GAP-W.cluster, group: X0-W.root/2-GAP*2-W.cluster-W.group, sub: X0-W.root/2-GAP*3-W.cluster-W.group-W.sub}};
+  root.x = X0 - W.root/2; root.y = H/2 - root.h/2;
+  nodes.forEach(n => { if (n.kind==="root" || !n.vis) return; n.x = xs[n.side][n.kind]; n.y += offs[n.side]; });
+  nodes.forEach(n => { if (n.vis===false) return; n.el.style.left = n.x+"px"; n.el.style.top = n.y+"px"; });
+  const paths = [];
+  const link = (a, b, side, hue) => {
+    const ax = side==="right" ? a.x + a.el.offsetWidth : a.x, ay = a.y + a.h/2;
+    const bx = side==="right" ? b.x : b.x + b.el.offsetWidth, by = b.y + (b.kind==="sub" ? Math.min(b.h/2, 22) : b.h/2);
+    const mx = (ax+bx)/2;
+    paths.push(`<path class="edge" stroke="${hue}" d="M${ax},${ay} C${mx},${ay} ${mx},${by} ${bx},${by}"/>`);
+  };
+  clusters.filter(c=>c.vis).forEach(cn => {
+    link(root, cn, cn.side, cn.hue);
+    cn.groupsVis.filter(g=>g.vis).forEach(g => { link(cn, g, cn.side, cn.hue); g.subsVis.filter(s=>s.vis).forEach(s => link(g, s, cn.side, cn.hue)); });
+  });
+  svg.setAttribute("width", Wd); svg.setAttribute("height", H); svg.innerHTML = paths.join("");
+  cv.style.width = Wd+"px"; cv.style.height = H+"px";
+  state.W = Wd; state.H = H;
+  applyScale();
+}
+function applyScale(){
+  cv.style.transform = `scale(${state.scale})`;
+  sizer.style.width = state.W*state.scale+"px"; sizer.style.height = state.H*state.scale+"px";
+  $("#zv").textContent = Math.round(state.scale*100)+"%";
+}
+function zoom(f){
+  if (!D) return;
+  const cx = (vp.scrollLeft + vp.clientWidth/2)/state.scale, cy = (vp.scrollTop + vp.clientHeight/2)/state.scale;
+  state.scale = Math.min(1.3, Math.max(0.4, +(state.scale*f).toFixed(2)));
+  applyScale();
+  vp.scrollLeft = cx*state.scale - vp.clientWidth/2; vp.scrollTop = cy*state.scale - vp.clientHeight/2;
+}
+function scrollToNode(n, smooth=true){
+  const x = (n.x + n.el.offsetWidth/2)*state.scale - vp.clientWidth/2, y = (n.y + Math.min(n.h,300)/2)*state.scale - vp.clientHeight/2;
+  vp.scrollTo({left:x, top:y, behavior: smooth && !matchMedia("(prefers-reduced-motion: reduce)").matches ? "smooth":"auto"});
+}
+function setClear(text){ $("#clear").hidden = !text; $("#cleartxt").textContent = text || ""; }
+function activateSol(s){
+  document.querySelectorAll(".sol").forEach(c => c.classList.remove("linked"));
+  if (state.activeSol === s.id) return clearAll();
+  if (!s.notes.length){ setClear(`${s.id} is not linked to specific notes`); return; }
+  state.activeSol = s.id; state.hl = new Set(s.notes);
+  document.querySelectorAll(".sol").forEach(c => c.classList.toggle("active", c.dataset.sid===s.id));
+  s.notes.forEach(id => { const sn = subOfKey(id); if (sn){ state.collapsed.delete(sn.parent.key); state.collapsed.delete(sn.parent.parent.key); } });
+  if (state.filter==="gaps") setFilter("all", false);
+  setClear(`${s.id}: ${s.notes.length} note${s.notes.length>1?"s":""} highlighted`);
+  layout();
+  const first = subOfKey(s.notes[0]); if (first) scrollToNode(first);
+}
+function showSolutionsFor(id){
+  const sols = solsFor(id);
+  document.querySelectorAll(".sol").forEach(c => c.classList.toggle("linked", sols.some(s=>s.id===c.dataset.sid)));
+  if (sols.length){
+    document.querySelector(`.sol[data-sid="${CSS.escape(sols[0].id)}"]`)?.scrollIntoView({block:"nearest", behavior:"smooth"});
+    setClear(`${id} is covered by ${sols.map(s=>s.id).join(", ")}`);
+  } else setClear(`${id} has no follow-up yet`);
+}
+function clearAll(){
+  state.activeSol = null; state.hl = null;
+  document.querySelectorAll(".sol").forEach(c => c.classList.remove("active","linked"));
+  setClear(""); layout();
+}
+$("#clearbtn").addEventListener("click", clearAll);
+function setFilter(f, relayout=true){
+  state.filter = f;
+  document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.f===f));
+  if (relayout) layout();
+}
+document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => { if (!D) return; if (b.dataset.f==="gaps") state.collapsed.clear(); setFilter(b.dataset.f); scrollToNode(root,false); }));
+let qt;
+$("#q").addEventListener("input", e => {
+  if (!D) return;
+  clearTimeout(qt);
+  qt = setTimeout(() => {
+    state.q = e.target.value.trim().toLowerCase();
+    if (state.q){
+      state.hl = null; state.activeSol = null; document.querySelectorAll(".sol").forEach(c=>c.classList.remove("active")); setClear("");
+      subs.forEach(sn => {
+        const m = [...sn.data.need, ...sn.data.skill].some(id=>noteMatches(id,state.q)) || (sn.data.title+" "+sn.parent.data.title).toLowerCase().includes(state.q);
+        if (m){ state.collapsed.delete(sn.parent.key); state.collapsed.delete(sn.parent.parent.key); }
+      });
+    }
+    layout();
+    if (state.q){ const f = subs.find(n=>n.vis && n.matchAny); if (f) scrollToNode(f); }
+  }, 160);
+});
+$("#expand").addEventListener("click", () => { if (!D) return; state.collapsed.clear(); layout(); });
+$("#collapse").addEventListener("click", () => { if (!D) return; nodes.filter(n=>n.kind==="group").forEach(g=>state.collapsed.add(g.key)); clusters.forEach(c=>state.collapsed.delete(c.key)); layout(); scrollToNode(root,false); });
+$("#zin").addEventListener("click", () => zoom(1.15));
+$("#zout").addEventListener("click", () => zoom(1/1.15));
+let pan = null;
+vp.addEventListener("pointerdown", e => {
+  if (e.pointerType !== "mouse" || e.button !== 0 || e.target.closest("button,[role=button]")) return;
+  pan = {x:e.clientX, y:e.clientY, l:vp.scrollLeft, t:vp.scrollTop}; vp.classList.add("panning");
+});
+window.addEventListener("pointermove", e => { if (!pan) return; vp.scrollLeft = pan.l - (e.clientX-pan.x); vp.scrollTop = pan.t - (e.clientY-pan.y); });
+window.addEventListener("pointerup", () => { pan = null; vp.classList.remove("panning"); });
+
+// ================= loading
+const STORE = "retreat-skills-map-v1";
+function showError(msg){ const e = $("#err"); e.textContent = msg; e.hidden = !msg; }
+function showDrop(on){ $("#dropwrap").hidden = !on; }
+function loaded(data, label){
+  D = data; showDrop(false); showError("");
+  $("#filebar").textContent = label;
+  build();
+}
+async function readFile(file){
+  showError("");
+  if (typeof XLSX === "undefined"){ showError("The Excel reader didn't load. Check your internet connection and reload the page."); return; }
+  if (!/\.(xlsx|xlsm|xls)$/i.test(file.name)){ showError("That isn't an Excel file. Download a copy of the workbook as .xlsx and try again."); return; }
+  try {
+    const wb = XLSX.read(await file.arrayBuffer(), {type:"array"});
+    const data = parseWorkbook(wb);
+    if (!Object.keys(data.notes).length) throw new Error("The “Notes” sheet has no rows with text.");
+    const label = `From ${file.name} · loaded ${new Date().toLocaleString([], {dateStyle:"medium", timeStyle:"short"})}`;
+    try { if ($("#remember").checked) localStorage.setItem(STORE, JSON.stringify({data, label})); else localStorage.removeItem(STORE); } catch(e) {}
+    loaded(data, label);
+  } catch (err){ showError(err.message || "This file couldn't be read."); }
+}
+$("#pick").addEventListener("click", () => $("#file").click());
+$("#file").addEventListener("change", e => { const f = e.target.files[0]; if (f) readFile(f); e.target.value = ""; });
+$("#reload").addEventListener("click", () => showDrop(true));
+const drop = $("#drop"), dw = $("#dropwrap");
+["dragenter","dragover"].forEach(t => window.addEventListener(t, e => { e.preventDefault(); showDrop(true); drop.classList.add("over"); }));
+["dragleave","drop"].forEach(t => dw.addEventListener(t, e => { e.preventDefault(); if (t==="dragleave" && dw.contains(e.relatedTarget)) return; drop.classList.remove("over"); }));
+window.addEventListener("drop", e => { e.preventDefault(); drop.classList.remove("over"); const f = e.dataTransfer?.files?.[0]; if (f) readFile(f); });
+dw.addEventListener("click", e => { if (e.target === dw && D) showDrop(false); });
+document.addEventListener("keydown", e => { if (e.key==="Escape" && D && !dw.hidden) showDrop(false); });
+try {
+  const saved = JSON.parse(localStorage.getItem(STORE) || "null");
+  if (saved && saved.data){ $("#remember").checked = true; (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => loaded(saved.data, saved.label + " · remembered on this device")); }
+} catch(e) {}
+</script>
+</body>
+</html>
